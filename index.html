@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sound Monitor</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, "Tahoma", sans-serif;
+    background: #f2f3f5;
+    color: #222;
+}
+
+/* =========================
+   ALERT BAR
+========================= */
+
+#alertBar {
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+
+    background: #d71919;
+    color: white;
+
+    padding: 10px 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    z-index: 2000;
+
+    transform: translateY(-100%);
+    transition: transform 0.3s ease;
+}
+
+#alertBar.show {
+    transform: translateY(0);
+}
+
+
+/* ปุ่มเข้าใจแล้วด้านบน */
+
+#acknowledgeTopButton {
+    border: none;
+
+    padding: 7px 16px;
+
+    border-radius: 8px;
+
+    background: white;
+    color: #d71919;
+
+    font-weight: bold;
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+#acknowledgeTopButton:hover {
+    background: #eeeeee;
+}
+
+#acknowledgeTopButton:disabled {
+    display: none;
+}
+
+
+/* =========================
+   MAIN CARD
+========================= */
+
+.card {
+    width: min(850px, 92%);
+
+    margin: 35px auto;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 28px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.08);
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    text-align: center;
+
+    margin-bottom: 25px;
+}
+
+.header h1 {
+    margin: 0;
+
+    font-size: 32px;
+}
+
+.header p {
+    margin-top: 8px;
+
+    color: #777;
+}
+
+
+/* =========================
+   CONNECTION
+========================= */
+
+.connection {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    background: #f7f7f7;
+
+    padding: 14px 16px;
+
+    border-radius: 12px;
+
+    margin-bottom: 25px;
+}
+
+#connectionStatus {
+    font-weight: bold;
+}
+
+#connectionButton {
+    border: none;
+
+    background: #222;
+    color: white;
+
+    padding: 10px 17px;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+}
+
+#connectionButton:hover {
+    opacity: 0.8;
+}
+
+
+/* =========================
+   SOUND TANK
+========================= */
+
+.tank-area {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 20px;
+
+    margin: 30px 0;
+}
+
+.tank-scale {
+    height: 420px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    text-align: right;
+
+    font-size: 14px;
+
+    font-weight: bold;
+}
+
+
+/* ถังน้ำ */
+
+.tank {
+    position: relative;
+
+    width: 185px;
+    height: 420px;
+
+    border: 6px solid #333;
+
+    border-radius:
+        25px
+        25px
+        32px
+        32px;
+
+    overflow: hidden;
+
+    background: #e5e7eb;
+
+    transition: transform 0.15s;
+}
+
+
+/* น้ำ */
+
+#soundLevel {
+    position: absolute;
+
+    bottom: 0;
+    left: 0;
+
+    width: 100%;
+
+    height: 0%;
+
+    background: #4dabf7;
+
+    transition:
+        height 0.25s ease,
+        background 0.25s ease;
+}
+
+
+/* น้ำแดง */
+
+#soundLevel.alert {
+    background: #e32626;
+}
+
+
+/* ถังเขย่า */
+
+.tank.alert {
+    animation: shake 0.12s infinite;
+}
+
+
+@keyframes shake {
+
+    0% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-4px);
+    }
+
+    50% {
+        transform: translateX(4px);
+    }
+
+    75% {
+        transform: translateX(-4px);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+
+}
+
+
+/* =========================
+   VALUE
+========================= */
+
+.value-section {
+    text-align: center;
+
+    margin: 20px 0 30px;
+}
+
+.analog-label {
+    color: #777;
+
+    font-size: 15px;
+}
+
+#analogValue {
+    font-size: 46px;
+
+    font-weight: bold;
+
+    margin-top: 5px;
+}
+
+.status-box {
+    display: inline-block;
+
+    margin-top: 10px;
+
+    padding: 9px 20px;
+
+    border-radius: 999px;
+
+    background: #eeeeee;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+.settings {
+    margin-top: 25px;
+
+    padding: 22px;
+
+    background: #f7f7f7;
+
+    border-radius: 16px;
+}
+
+.settings h2 {
+    margin-top: 0;
+}
+
+
+/* =========================
+   TOGGLE
+========================= */
+
+.notification-toggle {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.switch {
+    position: relative;
+
+    width: 52px;
+    height: 28px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider-switch {
+    position: absolute;
+
+    inset: 0;
+
+    background: #bbb;
+
+    border-radius: 30px;
+
+    cursor: pointer;
+}
+
+.slider-switch::before {
+    content: "";
+
+    position: absolute;
+
+    width: 22px;
+    height: 22px;
+
+    left: 3px;
+    top: 3px;
+
+    background: white;
+
+    border-radius: 50%;
+
+    transition: 0.2s;
+}
+
+.switch input:checked +
+.slider-switch {
+    background: #222;
+}
+
+.switch input:checked +
+.slider-switch::before {
+    transform: translateX(24px);
+}
+
+
+/* =========================
+   DROPDOWN
+========================= */
+
+.setting-row label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-weight: bold;
+}
+
+select {
+    width: 100%;
+
+    padding: 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 9px;
+
+    background: white;
+
+    font-size: 15px;
+}
+
+.notification-status {
+    margin-top: 12px;
+
+    color: #666;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   LEVEL TABLE
+========================= */
+
+.level-info {
+    margin-top: 25px;
+}
+
+.level-info table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: white;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+.level-info th,
+.level-info td {
+    padding: 10px;
+
+    border-bottom: 1px solid #eee;
+
+    text-align: center;
+}
+
+.level-info th {
+    background: #eeeeee;
+}
+
+
+/* =========================
+   SIMULATOR
+========================= */
+
+.simulator {
+    margin-top: 25px;
+
+    padding: 20px;
+
+    background: #f7f7f7;
+
+    border-radius: 16px;
+}
+
+.simulator h2 {
+    margin-top: 0;
+}
+
+#soundSlider {
+    width: 100%;
+}
+
+#sliderValue {
+    text-align: center;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    margin: 10px 0;
+}
+
+#resetButton {
+    padding: 9px 15px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #ddd;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   FULLSCREEN JUMPSCARE
+========================= */
+
+#videoOverlay {
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: black;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 1500;
+
+    opacity: 1;
+
+    transition: opacity 1s ease;
+}
+
+
+/* วิดีโอเต็มจอ */
+
+#jumpscareVideo {
+    width: 100vw;
+    height: 100vh;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 600px) {
+
+    .card {
+        padding: 20px;
+    }
+
+    .tank {
+        width: 150px;
+        height: 350px;
+    }
+
+    .tank-scale {
+        height: 350px;
+
+        font-size: 12px;
+    }
+
+    #analogValue {
+        font-size: 38px;
+    }
+
+    #alertBar {
+        font-size: 14px;
+
+        padding: 8px 10px;
+
+        gap: 8px;
+    }
+
+    #acknowledgeTopButton {
+        padding: 6px 10px;
+
+        font-size: 12px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- =========================
+     ALERT BAR
+========================= -->
+
+<div id="alertBar">
+
+<span>
+    🚨 แจ้งเตือน เสียงดังเกินกว่ากำหนด
+</span>
+
+<button id="acknowledgeTopButton">
+    ✓ เข้าใจแล้ว
+</button>
+
+</div>
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<div class="card">
+
+
+<!-- HEADER -->
+
+<div class="header">
+
+    <h1>
+        🔊 Sound Monitor
+    </h1>
+
+    <p>
+        ระบบตรวจจับและแจ้งเตือนระดับเสียง
+    </p>
+
+</div>
+
+
+<!-- CONNECTION -->
+
+<div class="connection">
+
+    <div>
+
+        สถานะ:
+
+        <span id="connectionStatus">
+            ยังไม่ได้เชื่อมต่อ
+        </span>
+
+    </div>
+
+
+    <button id="connectionButton">
+        เชื่อมต่อ Arduino
+    </button>
+
+</div>
+
+
+<!-- SOUND TANK -->
+
+<div class="tank-area">
+
+
+    <div class="tank-scale">
+
+        <span>
+            🚨 ดังมาก
+        </span>
+
+        <span>
+            🔊 ดัง
+        </span>
+
+        <span>
+            🗣️ จ้อกแจ้ก
+        </span>
+
+        <span>
+            🔉 เบา
+        </span>
+
+        <span>
+            🤫 เงียบ
+        </span>
+
+    </div>
+
+
+    <div class="tank" id="tank">
+
+        <div id="soundLevel"></div>
+
+    </div>
+
+</div>
+
+
+<!-- VALUE -->
+
+<div class="value-section">
+
+    <div class="analog-label">
+        ค่า Analog จาก KY-038
+    </div>
+
+
+    <div id="analogValue">
+        0
+    </div>
+
+
+    <div
+        class="status-box"
+        id="soundStatus"
+    >
+        🤫 เงียบ
+    </div>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div class="settings">
+
+    <h2>
+        ⚙️ ตั้งค่าการแจ้งเตือน
+    </h2>
+
+
+    <!-- Toggle -->
+
+    <div class="notification-toggle">
+
+        <span>
+            🔔 เปิดการแจ้งเตือน
+        </span>
+
+
+        <label class="switch">
+
+            <input
+                type="checkbox"
+                id="notificationToggle"
+                checked
+            >
+
+            <span class="slider-switch"></span>
+
+        </label>
+
+    </div>
+
+
+    <!-- Dropdown -->
+
+    <div class="setting-row">
+
+        <label for="alertLevel">
+            แจ้งเตือนเมื่อเสียงถึงระดับ
+        </label>
+
+
+        <select id="alertLevel">
+
+            <option value="0">
+                🤫 เงียบ — 0–200
+            </option>
+
+            <option value="1">
+                🔉 เบา — 201–400
+            </option>
+
+            <option value="2" selected>
+                🗣️ จ้อกแจ้ก — 401–600
+            </option>
+
+            <option value="3">
+                🔊 ดัง — 601–800
+            </option>
+
+            <option value="4">
+                🚨 ดังมาก — 801–1023
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div
+        class="notification-status"
+        id="notificationStatus"
+    >
+        ระบบจะแจ้งเตือนเมื่อเสียงถึงระดับ
+        "จ้อกแจ้ก" หรือสูงกว่า
+    </div>
+
+
+    <!-- LEVEL INFO -->
+
+    <div class="level-info">
+
+        <h3>
+            📊 ระดับเสียง
+        </h3>
+
+
+        <table>
+
+            <tr>
+                <th>
+                    ระดับ
+                </th>
+
+                <th>
+                    ค่า Analog
+                </th>
+            </tr>
+
+
+            <tr>
+                <td>
+                    🤫 เงียบ
+                </td>
+
+                <td>
+                    0–200
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    🔉 เบา
+                </td>
+
+                <td>
+                    201–400
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    🗣️ จ้อกแจ้ก
+                </td>
+
+                <td>
+                    401–600
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    🔊 ดัง
+                </td>
+
+                <td>
+                    601–800
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>
+                    🚨 ดังมาก
+                </td>
+
+                <td>
+                    801–1023
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- SIMULATOR -->
+
+<div class="simulator">
+
+    <h2>
+        🎛️ จำลองค่า KY-038
+    </h2>
+
+
+    <input
+        type="range"
+        id="soundSlider"
+        min="0"
+        max="1023"
+        value="0"
+    >
+
+
+    <div id="sliderValue">
+        0
+    </div>
+
+
+    <button id="resetButton">
+        รีเซ็ต
+    </button>
+
+</div>
+
+
+</div>
+
+<!-- =========================
+     VIDEO JUMPSCARE
+========================= -->
+
+<div id="videoOverlay">
+
+
+<video
+    id="jumpscareVideo"
+    src="jumpscare.mp4"
+    playsinline
+    preload="auto"
+></video>
+
+
+</div>
+
+<script>
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let connected = false;
+
+let alertActive = false;
+
+let alertAcknowledged = false;
+
+let alertSoundTimer = null;
+
+let popupTimer = null;
+
+let audioContext = null;
+
+
+/* =========================
+   DOM
+========================= */
+
+const tank =
+    document.getElementById("tank");
+
+
+const soundLevel =
+    document.getElementById("soundLevel");
+
+
+const analogValue =
+    document.getElementById("analogValue");
+
+
+const soundStatus =
+    document.getElementById("soundStatus");
+
+
+const slider =
+    document.getElementById("soundSlider");
+
+
+const sliderValue =
+    document.getElementById("sliderValue");
+
+
+const alertLevel =
+    document.getElementById("alertLevel");
+
+
+const notificationToggle =
+    document.getElementById("notificationToggle");
+
+
+const notificationStatus =
+    document.getElementById("notificationStatus");
+
+
+const acknowledgeTopButton =
+    document.getElementById(
+        "acknowledgeTopButton"
+    );
+
+
+const alertBar =
+    document.getElementById("alertBar");
+
+
+const videoOverlay =
+    document.getElementById(
+        "videoOverlay"
+    );
+
+
+const jumpscareVideo =
+    document.getElementById(
+        "jumpscareVideo"
+    );
+
+
+const connectionButton =
+    document.getElementById(
+        "connectionButton"
+    );
+
+
+const connectionStatus =
+    document.getElementById(
+        "connectionStatus"
+    );
+
+
+const resetButton =
+    document.getElementById(
+        "resetButton"
+    );
+
+
+/* =========================
+   LEVEL NAMES
+========================= */
+
+const levelNames = [
+
+    "เงียบ",
+
+    "เบา",
+
+    "จ้อกแจ้ก",
+
+    "ดัง",
+
+    "ดังมาก"
+
+];
+
+
+/* =========================
+   GET SOUND LEVEL
+========================= */
+
+function getSoundLevel(value) {
+
+
+    if (value <= 200) {
+
+        return {
+            level: 0,
+            text: "🤫 เงียบ"
+        };
+
+    }
+
+
+    if (value <= 400) {
+
+        return {
+            level: 1,
+            text: "🔉 เบา"
+        };
+
+    }
+
+
+    if (value <= 600) {
+
+        return {
+            level: 2,
+            text: "🗣️ จ้อกแจ้ก"
+        };
+
+    }
+
+
+    if (value <= 800) {
+
+        return {
+            level: 3,
+            text: "🔊 ดัง"
+        };
+
+    }
+
+
+    return {
+        level: 4,
+        text: "🚨 ดังมาก"
+    };
+
+}
+
+
+/* =========================
+   UPDATE SOUND
+========================= */
+
+function updateSound(value) {
+
+
+    value = Number(value);
+
+
+    const result =
+        getSoundLevel(value);
+
+
+    /* Analog */
+
+    analogValue.textContent =
+        value;
+
+
+    /* Slider */
+
+    sliderValue.textContent =
+        value;
+
+
+    /* Tank height */
+
+    const percent =
+        (value / 1023) * 100;
+
+
+    soundLevel.style.height =
+        percent + "%";
+
+
+    /* Status */
+
+    soundStatus.textContent =
+        result.text;
+
+
+    /* Alert */
+
+    checkAlert(
+        result.level
+    );
+
+}
+
+
+/* =========================
+   CHECK ALERT
+========================= */
+
+function checkAlert(currentLevel) {
+
+
+    /* ถ้าปิดแจ้งเตือน */
+
+    if (
+        !notificationToggle.checked
+    ) {
+
+        resetAlert();
+
+        return;
+
+    }
+
+
+    const selectedLevel =
+        Number(
+            alertLevel.value
+        );
+
+
+    /*
+        เสียงถึงเกณฑ์
+    */
+
+    if (
+        currentLevel >=
+        selectedLevel
+    ) {
+
+
+        /*
+            น้ำแดง
+        */
+
+        soundLevel.classList.add(
+            "alert"
+        );
+
+
+        /*
+            ถังเขย่า
+        */
+
+        tank.classList.add(
+            "alert"
+        );
+
+
+        /*
+            ถ้ายังไม่ได้แจ้ง
+            และผู้ใช้ยังไม่ได้กดเข้าใจ
+        */
+
+        if (
+            !alertActive &&
+            !alertAcknowledged
+        ) {
+
+            startAlert();
+
+        }
+
+    }
+
+    else {
+
+
+        /*
+            เสียงกลับต่ำกว่าเกณฑ์
+            รีเซ็ตระบบ
+        */
+
+        resetAlert();
+
+        alertAcknowledged =
+            false;
+
+    }
+
+}
+
+
+/* =========================
+   START ALERT
+========================= */
+
+function startAlert() {
+
+
+    alertActive = true;
+
+    alertAcknowledged =
+        false;
+
+
+    /*
+        แถบด้านบน
+    */
+
+    alertBar.classList.add(
+        "show"
+    );
+
+
+    /*
+        Jumpscare
+    */
+
+    showJumpscare();
+
+
+    /*
+        เสียงเตือน
+    */
+
+    startAlertSound();
+
+}
+
+
+/* =========================
+   SHOW VIDEO
+========================= */
+
+function showJumpscare() {
+
+    clearTimeout(popupTimer);
+
+    videoOverlay.style.display = "flex";
+    videoOverlay.style.opacity = "1";
+
+    // เริ่มวิดีโอใหม่ทุกครั้ง
+    jumpscareVideo.currentTime = 0;
+    jumpscareVideo.onended = () => {
+        videoOverlay.style.opacity = "0";
+
+        setTimeout(() => {
+            videoOverlay.style.display = "none";
+            videoOverlay.style.opacity = "1";
+            jumpscareVideo.currentTime = 0;
+        }, 800);
+    };
+
+    // จางเฉพาะช่วง 0.8 วินาทีสุดท้าย
+    jumpscareVideo.ontimeupdate = () => {
+        if (
+            isFinite(jumpscareVideo.duration) &&
+            jumpscareVideo.duration > 0 &&
+            jumpscareVideo.currentTime >= jumpscareVideo.duration - 0.8
+        ) {
+            videoOverlay.style.opacity = "0";
+        }
+    };
+
+    jumpscareVideo.play().catch(error => {
+        console.log("ไม่สามารถเล่นวิดีโออัตโนมัติได้", error);
+    });
+
+}
+
+
+/* =========================
+   CLOSE JUMPSCARE
+========================= */
+
+
+
+
+    function closeJumpscare() {
+
+    clearTimeout(
+        popupTimer
+    );
+
+
+    videoOverlay.style.opacity =
+        "0";
+
+
+    setTimeout(() => {
+
+
+        videoOverlay.style.display =
+            "none";
+
+
+        videoOverlay.style.opacity =
+            "1";
+
+
+        jumpscareVideo.pause();
+
+        jumpscareVideo.currentTime =
+            0;
+
+
+    }, 300);
+
+}
+
+
+/* =========================
+   ALERT BEEP
+========================= */
+
+function playAlertBeep() {
+
+
+    try {
+
+
+        if (!audioContext) {
+
+            audioContext =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+
+        }
+
+
+        if (
+            audioContext.state ===
+            "suspended"
+        ) {
+
+            audioContext.resume();
+
+        }
+
+
+        const oscillator =
+            audioContext.createOscillator();
+
+
+        const gain =
+            audioContext.createGain();
+
+
+        oscillator.type =
+            "square";
+
+
+        oscillator.frequency.value =
+            800;
+
+
+        gain.gain.value =
+            0.08;
+
+
+        oscillator.connect(
+            gain
+        );
+
+
+        gain.connect(
+            audioContext.destination
+        );
+
+
+        oscillator.start();
+
+
+        oscillator.stop(
+            audioContext.currentTime +
+            0.25
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.log(
+            "ไม่สามารถเล่นเสียงแจ้งเตือนได้",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================
+   START ALERT SOUND
+========================= */
+
+function startAlertSound() {
+
+
+    stopAlertSound();
+
+
+    playAlertBeep();
+
+
+    /*
+        ดังซ้ำทุก 0.5 วินาที
+    */
+
+    alertSoundTimer =
+        setInterval(() => {
+
+            playAlertBeep();
+
+        }, 500);
+
+}
+
+
+/* =========================
+   STOP ALERT SOUND
+========================= */
+
+function stopAlertSound() {
+
+
+    if (alertSoundTimer) {
+
+        clearInterval(
+            alertSoundTimer
+        );
+
+        alertSoundTimer =
+            null;
+
+    }
+
+}
+
+
+/* =========================
+   RESET ALERT
+========================= */
+
+function resetAlert(keepVideo = false) {
+
+
+    alertActive =
+        false;
+
+
+    soundLevel.classList.remove(
+        "alert"
+    );
+
+
+    tank.classList.remove(
+        "alert"
+    );
+
+
+    alertBar.classList.remove(
+        "show"
+    );
+
+
+    stopAlertSound();
+
+
+    // ถ้าวิดีโอกำลังเล่น ให้เล่นจนจบก่อน
+    // จะปิดทันทีเฉพาะตอนที่เรียก resetAlert() แบบปกติ
+    if (!keepVideo) {
+        closeJumpscare();
+    }
+
+}
+
+
+/* =========================
+   ACKNOWLEDGE
+========================= */
+
+acknowledgeTopButton.addEventListener(
+    "click",
+    () => {
+
+
+        /*
+            หยุดเสียง
+        */
+
+        stopAlertSound();
+
+
+        /*
+            ผู้ใช้รับทราบแล้ว
+        */
+
+        alertAcknowledged =
+            true;
+
+
+        alertActive =
+            false;
+
+
+        /*
+            ซ่อนแถบ
+        */
+
+        alertBar.classList.remove(
+            "show"
+        );
+
+
+        /*
+            ปิดวิดีโอ
+        */
+
+        closeJumpscare();
+
+
+        /*
+            น้ำยังแดง
+            และถังยังเขย่า
+            ถ้าเสียงยังเกินเกณฑ์
+
+            แต่จะไม่แจ้งซ้ำ
+        */
+
+    }
+);
+
+
+/* =========================
+   TOGGLE
+========================= */
+
+notificationToggle.addEventListener(
+    "change",
+    () => {
+
+
+        updateNotificationText();
+
+
+        if (
+            !notificationToggle.checked
+        ) {
+
+            resetAlert();
+
+            alertAcknowledged =
+                false;
+
+            return;
+
+        }
+
+
+        alertAcknowledged =
+            false;
+
+
+        updateSound(
+            slider.value
+        );
+
+    }
+);
+
+
+/* =========================
+   CHANGE LEVEL
+========================= */
+
+alertLevel.addEventListener(
+    "change",
+    () => {
+
+
+        updateNotificationText();
+
+
+        /*
+            เปลี่ยนเกณฑ์
+            รีเซ็ตระบบ
+        */
+
+        resetAlert();
+
+
+        alertAcknowledged =
+            false;
+
+
+        updateSound(
+            slider.value
+        );
+
+    }
+);
+
+
+/* =========================
+   SETTING TEXT
+========================= */
+
+function updateNotificationText() {
+
+
+    const selected =
+        Number(
+            alertLevel.value
+        );
+
+
+    notificationStatus.textContent =
+        `ระบบจะแจ้งเตือนเมื่อเสียงถึงระดับ "${levelNames[selected]}" หรือสูงกว่า`;
+
+}
+
+
+/* =========================
+   SLIDER
+========================= */
+
+slider.addEventListener(
+    "input",
+    () => {
+
+        updateSound(
+            slider.value
+        );
+
+    }
+);
+
+
+/* =========================
+   RESET
+========================= */
+
+resetButton.addEventListener(
+    "click",
+    () => {
+
+        slider.value = 0;
+
+        alertAcknowledged =
+            false;
+
+        updateSound(0);
+
+    }
+);
+
+
+/* =========================
+   CONNECTION
+========================= */
+
+connectionButton.addEventListener(
+    "click",
+    () => {
+
+        /*
+            ผู้ใช้กดปุ่มแล้ว จึงใช้จังหวะนี้
+            ปลดล็อก AudioContext สำหรับเสียงวิดีโอ
+        */
+
+        try {
+
+            if (!audioContext) {
+
+                audioContext =
+                    new (
+                        window.AudioContext ||
+                        window.webkitAudioContext
+                    )();
+
+            }
+
+            if (
+                audioContext.state ===
+                "suspended"
+            ) {
+
+                audioContext.resume();
+
+            }
+
+        } catch (error) {
+
+            console.log(
+                "AudioContext error:",
+                error
+            );
+
+        }
+
+
+        connected =
+            !connected;
+
+
+        if (connected) {
+
+            connectionStatus.textContent =
+                "เชื่อมต่อแล้ว";
+
+
+            connectionButton.textContent =
+                "ตัดการเชื่อมต่อ";
+
+        }
+
+        else {
+
+            connectionStatus.textContent =
+                "ยังไม่ได้เชื่อมต่อ";
+
+
+            connectionButton.textContent =
+                "เชื่อมต่อ Arduino";
+
+        }
+
+    }
+);
+
+
+/* =========================
+   INITIAL
+========================= */
+
+updateNotificationText();
+
+updateSound(0);
+
+</script>
+
+</body>
+</html>
