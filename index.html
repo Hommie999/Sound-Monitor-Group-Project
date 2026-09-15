@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -669,13 +668,22 @@ select {
 
 /* =========================================================
    SOUND MONITOR
+<<<<<<< HEAD
    Arduino UNO + KY-038 + Peak-to-Peak + Web Serial
 ========================================================= */
+=======
+   Arduino UNO + KY-038 + Web Serial
+   ========================================================= */
+
+
+/* =========================================================
+   VARIABLES
+   ========================================================= */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
 let connected = false;
 
 let alertActive = false;
-
 let alertAcknowledged = false;
 
 let alertSoundTimer = null;
@@ -686,6 +694,7 @@ let audioContext = null;
    WEB SERIAL
 ========================================================= */
 
+<<<<<<< HEAD
 let port = null;
 
 let reader = null;
@@ -697,6 +706,22 @@ let readPromise = null;
 /* =========================================================
    DOM
 ========================================================= */
+=======
+/* =========================================================
+   WEB SERIAL VARIABLES
+   ========================================================= */
+
+let port = null;
+let reader = null;
+
+let keepReading = false;
+let readPromise = null;
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
 const tank =
     document.getElementById("tank");
@@ -746,9 +771,16 @@ const connectionStatus =
 const resetButton =
     document.getElementById("resetButton");
 
+<<<<<<< HEAD
 /* =========================================================
    LEVEL NAMES
 ========================================================= */
+=======
+
+/* =========================================================
+   LEVEL NAMES
+   ========================================================= */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
 const levelNames = [
     "เงียบ",
@@ -762,6 +794,7 @@ const levelNames = [
    PEAK-TO-PEAK RANGE
 ========================================================= */
 
+<<<<<<< HEAD
 /*
    ค่านี้เป็นช่วงที่ใช้สำหรับแสดงความสูงของถัง
 
@@ -776,6 +809,11 @@ const MAX_SOUND_VALUE = 500;
 /* =========================================================
    GET SOUND LEVEL
 ========================================================= */
+=======
+/* =========================================================
+   GET SOUND LEVEL
+   ========================================================= */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
 function getSoundLevel(value) {
 
@@ -788,21 +826,36 @@ function getSoundLevel(value) {
         };
     }
 
+<<<<<<< HEAD
     if (value <= 50) {
+=======
+    if (value <= 400) {
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
         return {
             level: 1,
             text: "🔉 เบา"
         };
     }
 
+<<<<<<< HEAD
     if (value <= 100) {
+=======
+    if (value <= 600) {
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
         return {
             level: 2,
             text: "🗣️ จ้อกแจ้ก"
         };
     }
 
+<<<<<<< HEAD
     if (value <= 200) {
+=======
+    if (value <= 800) {
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
         return {
             level: 3,
             text: "🔊 ดัง"
@@ -815,9 +868,16 @@ function getSoundLevel(value) {
     };
 }
 
+<<<<<<< HEAD
 /* =========================================================
    UPDATE SOUND
 ========================================================= */
+=======
+
+/* =========================================================
+   UPDATE SOUND
+   ========================================================= */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
 function updateSound(value) {
 
@@ -827,27 +887,48 @@ function updateSound(value) {
         return;
     }
 
+<<<<<<< HEAD
     value = Math.max(0, value);
+=======
+    // จำกัดค่าให้อยู่ใน 0–1023
+    value = Math.max(0, Math.min(1023, value));
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
     const result =
         getSoundLevel(value);
 
+<<<<<<< HEAD
     /* -------------------------
        แสดงค่าจริง
     ------------------------- */
+=======
+
+    /* -----------------------------------------------------
+       Analog value
+       ----------------------------------------------------- */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
     analogValue.textContent =
         Math.round(value);
 
+<<<<<<< HEAD
     /* -------------------------
        Slider
     ------------------------- */
+=======
+
+    /* -----------------------------------------------------
+       Slider value
+       ----------------------------------------------------- */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
     sliderValue.textContent =
         Math.round(value);
 
     if (connected) {
 
+<<<<<<< HEAD
         slider.value =
             Math.min(
                 MAX_SOUND_VALUE,
@@ -864,13 +945,41 @@ function updateSound(value) {
             100,
             (value / MAX_SOUND_VALUE) * 100
         );
+=======
+    /*
+       ถ้าเชื่อม Arduino อยู่
+       Slider จะขยับตามค่าจริงจาก Arduino
+    */
+
+    if (connected) {
+
+        slider.value =
+            Math.round(value);
+
+    }
+
+
+    /* -----------------------------------------------------
+       Tank height
+       ----------------------------------------------------- */
+
+    const percent =
+        (value / 1023) * 100;
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
     soundLevel.style.height =
         percent + "%";
 
+<<<<<<< HEAD
     /* -------------------------
        Status
     ------------------------- */
+=======
+
+    /* -----------------------------------------------------
+       Status
+       ----------------------------------------------------- */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
     soundStatus.textContent =
         result.text;
@@ -879,6 +988,7 @@ function updateSound(value) {
        Alert
     ------------------------- */
 
+<<<<<<< HEAD
     checkAlert(result.level);
 }
 
@@ -888,6 +998,26 @@ function updateSound(value) {
 
 function checkAlert(currentLevel) {
 
+=======
+    /* -----------------------------------------------------
+       Alert
+       ----------------------------------------------------- */
+
+    checkAlert(result.level);
+}
+
+
+/* =========================================================
+   CHECK ALERT
+   ========================================================= */
+
+function checkAlert(currentLevel) {
+
+    /* -----------------------------------------------------
+       ถ้าปิดระบบแจ้งเตือน
+       ----------------------------------------------------- */
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
     if (!notificationToggle.checked) {
 
         resetAlert();
@@ -902,29 +1032,93 @@ function checkAlert(currentLevel) {
 
     if (currentLevel >= selectedLevel) {
 
+<<<<<<< HEAD
         if (!alertAcknowledged) {
 
             soundLevel.classList.add("alert");
+=======
+    /* -----------------------------------------------------
+       เสียงถึงระดับที่ตั้งไว้
+       ----------------------------------------------------- */
+
+    if (currentLevel >= selectedLevel) {
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
             tank.classList.add("alert");
+
+<<<<<<< HEAD
+            if (!alertActive) {
+
+                startAlert();
+=======
+        /*
+           ถ้า user กดเข้าใจแล้ว
+           จะไม่แจ้งซ้ำจนกว่าเสียงจะลดลงต่ำกว่าเกณฑ์
+        */
+
+        if (!alertAcknowledged) {
+
+            /*
+               ทำให้ถังแดง
+            */
+
+            soundLevel.classList.add("alert");
+
+
+            /*
+               ทำให้ถังสั่น
+            */
+
+            tank.classList.add("alert");
+
+
+            /*
+               ถ้ายังไม่ได้แจ้ง
+               ให้เริ่ม Alert
+            */
 
             if (!alertActive) {
 
                 startAlert();
 
             }
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
+
+            }
         }
     }
 
+
+    /* -----------------------------------------------------
+       เสียงต่ำกว่าเกณฑ์
+       ----------------------------------------------------- */
+
     else {
+
+<<<<<<< HEAD
+        resetAlert();
+
+=======
+        /*
+           รีเซ็ต Alert
+        */
 
         resetAlert();
 
+
+        /*
+           สำคัญ:
+           เมื่อเสียงลดต่ำกว่าเกณฑ์แล้ว
+           จึงสามารถแจ้งครั้งต่อไปได้
+        */
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
         alertAcknowledged = false;
 
     }
 }
 
+<<<<<<< HEAD
 /* =========================================================
    START ALERT
 ========================================================= */
@@ -934,24 +1128,413 @@ function startAlert() {
     if (alertActive) {
         return;
     }
+=======
+
+/* =========================================================
+   START ALERT
+   ========================================================= */
+
+function startAlert() {
+
+    /*
+       ป้องกันการเรียกซ้ำ
+    */
+
+    if (alertActive) {
+        return;
+    }
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
     alertActive = true;
 
     alertAcknowledged = false;
+<<<<<<< HEAD
+
+    alertBar.classList.add("show");
+=======
+
+
+    /* -----------------------------------------------------
+       Alert bar
+       ----------------------------------------------------- */
 
     alertBar.classList.add("show");
 
+
+    /* -----------------------------------------------------
+       Jumpscare
+       ----------------------------------------------------- */
+
     showJumpscare();
 
+
+    /* -----------------------------------------------------
+       เสียงเตือน
+       ----------------------------------------------------- */
+
+    startAlertSound();
+}
+
+
+/* =========================================================
+   SHOW JUMPSCARE
+   ========================================================= */
+
+function showJumpscare() {
+
+    /*
+       แสดงทันที
+       ไม่มี Fade
+    */
+
+    videoOverlay.style.display = "flex";
+    videoOverlay.style.opacity = "1";
+
+
+    /*
+       เริ่มวิดีโอใหม่
+    */
+
+    jumpscareVideo.pause();
+
+    jumpscareVideo.currentTime = 0;
+
+
+    /*
+       ไม่มี Fade ตอนจบ
+       ปล่อยให้เล่นจนจบจริง
+    */
+
+    jumpscareVideo.onended = () => {
+
+        /*
+           ซ่อนทันทีหลังวิดีโอจบ
+        */
+
+        videoOverlay.style.display = "none";
+
+        videoOverlay.style.opacity = "1";
+
+        jumpscareVideo.currentTime = 0;
+
+    };
+
+
+    /*
+       ลบ ontimeupdate เดิม
+       เพราะเราไม่ต้องการ Fade
+    */
+
+    jumpscareVideo.ontimeupdate = null;
+
+
+    /*
+       เล่นวิดีโอ
+    */
+
+    jumpscareVideo.play()
+        .catch(error => {
+
+            console.log(
+                "ไม่สามารถเล่นวิดีโออัตโนมัติได้:",
+                error
+            );
+
+        });
+}
+
+
+/* =========================================================
+   CLOSE JUMPSCARE
+   ========================================================= */
+
+function closeJumpscare() {
+
+    /*
+       หยุดวิดีโอทันที
+    */
+
+    jumpscareVideo.pause();
+
+
+    /*
+       กลับไปต้นวิดีโอ
+    */
+
+    jumpscareVideo.currentTime = 0;
+
+
+    /*
+       ไม่มี Fade
+    */
+
+    videoOverlay.style.opacity = "1";
+
+
+    /*
+       ซ่อนทันที
+    */
+
+    videoOverlay.style.display = "none";
+}
+
+
+/* =========================================================
+   ALERT BEEP
+   ========================================================= */
+
+function playAlertBeep() {
+
+    try {
+
+        /*
+           สร้าง AudioContext ถ้ายังไม่มี
+        */
+
+        if (!audioContext) {
+
+            audioContext =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+
+        }
+
+
+        /*
+           ถ้า AudioContext ถูกพักอยู่
+           ให้ Resume
+        */
+
+        if (
+            audioContext.state === "suspended"
+        ) {
+
+            audioContext.resume();
+
+        }
+
+
+        /*
+           Oscillator
+        */
+
+        const oscillator =
+            audioContext.createOscillator();
+
+
+        /*
+           Gain
+        */
+
+        const gain =
+            audioContext.createGain();
+
+
+        /*
+           เสียงแบบ Square
+        */
+
+        oscillator.type =
+            "square";
+
+
+        /*
+           ความถี่
+        */
+
+        oscillator.frequency.value =
+            800;
+
+
+        /*
+           ระดับเสียง
+        */
+
+        gain.gain.value =
+            0.08;
+
+
+        /*
+           เชื่อมต่อ
+        */
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            audioContext.destination
+        );
+
+
+        /*
+           เริ่มเสียง
+        */
+
+        oscillator.start();
+
+
+        /*
+           เสียงยาว 0.25 วินาที
+        */
+
+        oscillator.stop(
+            audioContext.currentTime + 0.25
+        );
+
+    }
+
+    catch (error) {
+
+        console.log(
+            "ไม่สามารถเล่นเสียงแจ้งเตือนได้:",
+            error
+        );
+
+    }
+}
+
+
+/* =========================================================
+   START ALERT SOUND
+   ========================================================= */
+
+function startAlertSound() {
+
+    /*
+       ป้องกันเสียงซ้อน
+    */
+
+    stopAlertSound();
+
+
+    /*
+       เล่นทันที
+    */
+
+    playAlertBeep();
+
+
+    /*
+       เล่นซ้ำทุก 0.5 วินาที
+    */
+
+    alertSoundTimer =
+        setInterval(() => {
+
+            /*
+               ถ้า Alert ถูกปิดแล้ว
+               ไม่ต้องเล่นต่อ
+            */
+
+            if (!alertActive) {
+
+                stopAlertSound();
+
+                return;
+
+            }
+
+
+            playAlertBeep();
+
+        }, 500);
+}
+
+
+/* =========================================================
+   STOP ALERT SOUND
+   ========================================================= */
+
+function stopAlertSound() {
+
+    if (alertSoundTimer !== null) {
+
+        clearInterval(
+            alertSoundTimer
+        );
+
+        alertSoundTimer = null;
+
+    }
+}
+
+
+/* =========================================================
+   RESET ALERT
+   ========================================================= */
+
+function resetAlert() {
+
+    /*
+       ปิดสถานะ Alert
+    */
+
+    alertActive = false;
+
+
+    /*
+       เอาสีแดงออก
+    */
+
+    soundLevel.classList.remove(
+        "alert"
+    );
+
+
+    /*
+       หยุดถังสั่น
+    */
+
+    tank.classList.remove(
+        "alert"
+    );
+
+
+    /*
+       ซ่อน Alert Bar
+    */
+
+    alertBar.classList.remove(
+        "show"
+    );
+
+
+    /*
+       หยุดเสียง
+    */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
+
+    stopAlertSound();
+
+<<<<<<< HEAD
     startAlertSound();
 }
 
 /* =========================================================
    SHOW JUMPSCARE
 ========================================================= */
+=======
 
-function showJumpscare() {
+    /*
+       ปิดวิดีโอ
+    */
 
+    closeJumpscare();
+}
+
+
+/* =========================================================
+   ACKNOWLEDGE BUTTON
+   ========================================================= */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
+
+acknowledgeTopButton.addEventListener(
+    "click",
+    () => {
+
+<<<<<<< HEAD
     videoOverlay.style.display = "flex";
 
     videoOverlay.style.opacity = "1";
@@ -986,13 +1569,210 @@ function showJumpscare() {
 /* =========================================================
    CLOSE JUMPSCARE
 ========================================================= */
+=======
+        /*
+           ผู้ใช้กดเข้าใจแล้ว
+        */
+
+        alertAcknowledged = true;
+
+
+        /*
+           หยุด Alert
+        */
+
+        alertActive = false;
+
+
+        /*
+           หยุดเสียง
+        */
+
+        stopAlertSound();
+
+
+        /*
+           เอาสีแดงออก
+        */
+
+        soundLevel.classList.remove(
+            "alert"
+        );
+
+
+        /*
+           หยุดถังสั่น
+        */
+
+        tank.classList.remove(
+            "alert"
+        );
+
+
+        /*
+           ซ่อน Alert Bar
+        */
+
+        alertBar.classList.remove(
+            "show"
+        );
+
+
+        /*
+           ปิด Jumpscare
+        */
+
+        closeJumpscare();
+
+    }
+);
+
+
+/* =========================================================
+   NOTIFICATION TOGGLE
+   ========================================================= */
+
+notificationToggle.addEventListener(
+    "change",
+    () => {
+
+        updateNotificationText();
+
+
+        /*
+           ถ้าปิดแจ้งเตือน
+        */
+
+        if (!notificationToggle.checked) {
+
+            resetAlert();
+
+            alertAcknowledged = false;
+
+            return;
+        }
+
+
+        /*
+           เปิดใหม่
+        */
+
+        alertAcknowledged = false;
+
+
+        /*
+           เช็กค่าปัจจุบันอีกครั้ง
+
+           ถ้าเชื่อม Arduino:
+           ใช้ค่าจาก analogValue
+
+           ถ้ายังไม่เชื่อม:
+           ใช้ค่าจาก slider
+        */
+
+        const currentValue =
+            connected
+                ? Number(analogValue.textContent)
+                : Number(slider.value);
+
+
+        updateSound(currentValue);
+
+    }
+);
+
+
+/* =========================================================
+   CHANGE ALERT LEVEL
+   ========================================================= */
+
+alertLevel.addEventListener(
+    "change",
+    () => {
+
+        updateNotificationText();
+
+
+        /*
+           เปลี่ยนระดับแจ้งเตือน
+           ให้เริ่มสถานะใหม่
+        */
+
+        resetAlert();
+
+        alertAcknowledged = false;
+
+
+        /*
+           ใช้ค่าปัจจุบัน
+        */
+
+        const currentValue =
+            connected
+                ? Number(analogValue.textContent)
+                : Number(slider.value);
+
+
+        updateSound(currentValue);
+
+    }
+);
+
+
+/* =========================================================
+   UPDATE NOTIFICATION TEXT
+   ========================================================= */
+
+function updateNotificationText() {
+
+    const selected =
+        Number(alertLevel.value);
+
+
+    notificationStatus.textContent =
+        `ระบบจะแจ้งเตือนเมื่อเสียงถึงระดับ "${levelNames[selected]}" หรือสูงกว่า`;
+}
+
+
+/* =========================================================
+   SLIDER
+   ========================================================= */
+
+slider.addEventListener(
+    "input",
+    () => {
+
+        /*
+           ถ้าเชื่อม Arduino แล้ว
+           ห้าม Slider ไปทับค่าจริง
+        */
+
+        if (connected) {
+            return;
+        }
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
 function closeJumpscare() {
 
+<<<<<<< HEAD
     jumpscareVideo.pause();
+=======
+        /*
+           ตอนยังไม่เชื่อม Arduino
+           Slider ใช้จำลองค่าได้
+        */
+
+        updateSound(
+            Number(slider.value)
+        );
+
+    }
+);
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
     jumpscareVideo.currentTime = 0;
 
+<<<<<<< HEAD
     videoOverlay.style.opacity = "1";
 
     videoOverlay.style.display = "none";
@@ -1004,6 +1784,54 @@ function closeJumpscare() {
 
 function playAlertBeep() {
 
+=======
+/* =========================================================
+   RESET BUTTON
+   ========================================================= */
+
+resetButton.addEventListener(
+    "click",
+    () => {
+
+        /*
+           รีเซ็ตค่า Slider
+        */
+
+        slider.value = 0;
+
+
+        /*
+           อนุญาตให้ Alert ครั้งต่อไปทำงาน
+        */
+
+        alertAcknowledged = false;
+
+
+        /*
+           ถ้าเชื่อม Arduino อยู่
+           ปุ่ม Reset ไม่ควรหลอกค่าจริง
+        */
+
+        if (connected) {
+
+            return;
+
+        }
+
+
+        updateSound(0);
+
+    }
+);
+
+
+/* =========================================================
+   AUDIO UNLOCK
+   ========================================================= */
+
+function unlockAudio() {
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
     try {
 
         if (!audioContext) {
@@ -1024,6 +1852,7 @@ function playAlertBeep() {
 
         }
 
+<<<<<<< HEAD
         const oscillator =
             audioContext.createOscillator();
 
@@ -1051,24 +1880,61 @@ function playAlertBeep() {
             audioContext.currentTime + 0.25
         );
 
+=======
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
     }
 
     catch (error) {
 
         console.log(
+<<<<<<< HEAD
             "ไม่สามารถเล่นเสียงแจ้งเตือนได้:",
+=======
+            "AudioContext error:",
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
             error
         );
 
     }
 }
 
+<<<<<<< HEAD
 /* =========================================================
    START ALERT SOUND
 ========================================================= */
+=======
 
-function startAlertSound() {
+/* =========================================================
+   UPDATE CONNECTION UI
+   ========================================================= */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
+function updateConnectionUI(
+    isConnected
+) {
+
+    if (isConnected) {
+
+        connectionStatus.textContent =
+            "สถานะ: เชื่อมต่อสำเร็จ";
+
+        connectionButton.textContent =
+            "ตัดการเชื่อมต่อ";
+
+    }
+
+    else {
+
+        connectionStatus.textContent =
+            "สถานะ: เชื่อมต่อไม่สำเร็จ";
+
+        connectionButton.textContent =
+            "เชื่อมต่อ Arduino";
+
+    }
+}
+
+<<<<<<< HEAD
     stopAlertSound();
 
     playAlertBeep();
@@ -1092,9 +1958,64 @@ function startAlertSound() {
 /* =========================================================
    STOP ALERT SOUND
 ========================================================= */
+=======
 
-function stopAlertSound() {
+/* =========================================================
+   CHECK WEB SERIAL
+   ========================================================= */
 
+function checkWebSerialSupport() {
+
+    if (!("serial" in navigator)) {
+
+        console.error(
+            "Web Serial API ไม่รองรับใน Browser นี้"
+        );
+
+        connectionStatus.textContent =
+            "เบราว์เซอร์ไม่รองรับ Web Serial";
+
+        connectionButton.disabled = true;
+
+        return false;
+    }
+
+
+    return true;
+}
+
+
+/* =========================================================
+   CONNECT ARDUINO
+   ========================================================= */
+
+async function connectArduino() {
+
+    /*
+       ปลดล็อก AudioContext
+       เพราะฟังก์ชันนี้เกิดจากการกดปุ่ม
+    */
+
+    unlockAudio();
+
+
+    /*
+       ตรวจสอบ Web Serial
+    */
+
+    if (!checkWebSerialSupport()) {
+        return;
+    }
+
+
+    /*
+       ป้องกันการกด Connect ซ้ำ
+    */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
+
+    if (connected) {
+
+<<<<<<< HEAD
     if (alertSoundTimer !== null) {
 
         clearInterval(
@@ -1134,21 +2055,71 @@ function resetAlert() {
 /* =========================================================
    ACKNOWLEDGE BUTTON
 ========================================================= */
+=======
+        console.log(
+            "Arduino เชื่อมต่ออยู่แล้ว"
+        );
 
-acknowledgeTopButton.addEventListener(
-    "click",
-    () => {
+        return;
+    }
+
+
+    /*
+       ถ้ามีพอร์ตอยู่และเปิดอยู่
+       ให้ใช้พอร์ตเดิม
+    */
+
+    if (
+        port &&
+        port.readable
+    ) {
+
+        console.log(
+            "Port เปิดอยู่แล้ว กำลังใช้งานพอร์ตเดิม"
+        );
+
+        connected = true;
+
+        keepReading = true;
+
+        updateConnectionUI(true);
+
+        return;
+    }
+
+
+    try {
+
+        /*
+           ให้ Chrome แสดงหน้าต่างเลือก Serial Port
+        */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
+
+        port =
+            await navigator.serial.requestPort();
 
         alertAcknowledged = true;
 
+<<<<<<< HEAD
         alertActive = false;
+=======
+        /*
+           เปิด Serial
 
-        stopAlertSound();
+           Arduino:
+           Serial.begin(9600)
+        */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
+
+        await port.open({
+            baudRate: 9600
+        });
 
         soundLevel.classList.remove(
             "alert"
         );
 
+<<<<<<< HEAD
         tank.classList.remove(
             "alert"
         );
@@ -1177,36 +2148,135 @@ notificationToggle.addEventListener(
             resetAlert();
 
             alertAcknowledged = false;
+=======
+        /*
+           เปลี่ยนสถานะ
+        */
+
+        connected = true;
+
+        keepReading = true;
+
+
+        updateConnectionUI(true);
+
+
+        console.log(
+            "Arduino connected!"
+        );
+
+
+        /*
+           เริ่มอ่านค่าจาก Arduino
+        */
+
+        readPromise =
+            readSerialData();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Serial connection error:",
+            error
+        );
+
+
+        /*
+           ถ้าผู้ใช้ปิดหน้าต่างเลือก Port
+        */
+
+        if (
+            error.name ===
+            "NotFoundError"
+        ) {
+
+            console.log(
+                "ผู้ใช้ไม่ได้เลือก Arduino"
+            );
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
             return;
         }
 
         alertAcknowledged = false;
 
+<<<<<<< HEAD
         const currentValue =
             connected
                 ? Number(analogValue.textContent)
                 : Number(slider.value);
 
         updateSound(currentValue);
+=======
+        /*
+           Port เปิดอยู่แล้ว
+        */
 
-    }
-);
+        if (
+            error.name ===
+            "InvalidStateError"
+        ) {
 
+            console.log(
+                "Port นี้เปิดอยู่แล้ว"
+            );
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
+
+            /*
+               ถ้าอ่านได้จริง
+               ให้ถือว่าเชื่อมต่ออยู่
+            */
+
+<<<<<<< HEAD
 /* =========================================================
    CHANGE ALERT LEVEL
 ========================================================= */
+=======
+            if (
+                port &&
+                port.readable
+            ) {
 
-alertLevel.addEventListener(
-    "change",
-    () => {
+                connected = true;
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
+                keepReading = true;
+
+<<<<<<< HEAD
         updateNotificationText();
 
         resetAlert();
+=======
+                updateConnectionUI(true);
+
+                if (!readPromise) {
+
+                    readPromise =
+                        readSerialData();
+
+                }
+
+                return;
+            }
+        }
+
+
+        /*
+           Error อื่น
+        */
+
+        connected = false;
+
+        keepReading = false;
+
+        updateConnectionUI(false);
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
         alertAcknowledged = false;
 
+<<<<<<< HEAD
         const currentValue =
             connected
                 ? Number(analogValue.textContent)
@@ -1234,11 +2304,33 @@ function updateNotificationText() {
 /* =========================================================
    SLIDER
 ========================================================= */
+=======
+        /*
+           แสดง Error ที่อ่านง่าย
+        */
 
-slider.addEventListener(
-    "input",
-    () => {
+        alert(
+            "เชื่อมต่อ Arduino ไม่สำเร็จ\n\n" +
+            error.name +
+            "\n" +
+            error.message +
+            "\n\n" +
+            "ตรวจสอบว่า Serial Monitor ของ Arduino IDE ปิดอยู่หรือไม่"
+        );
 
+    }
+
+}
+
+
+/* =========================================================
+   READ SERIAL DATA
+   ========================================================= */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
+
+async function readSerialData() {
+
+<<<<<<< HEAD
         if (connected) {
             return;
         }
@@ -1246,31 +2338,188 @@ slider.addEventListener(
         updateSound(
             Number(slider.value)
         );
+=======
+    if (
+        !port ||
+        !port.readable
+    ) {
+
+        return;
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
     }
-);
 
+<<<<<<< HEAD
 /* =========================================================
    RESET BUTTON
 ========================================================= */
+=======
 
-resetButton.addEventListener(
-    "click",
-    () => {
+    /*
+       ขอสิทธิ์อ่านข้อมูล
+    */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
-        slider.value = 0;
+    reader =
+        port.readable.getReader();
 
+
+<<<<<<< HEAD
         alertAcknowledged = false;
 
         if (connected) {
             return;
         }
+=======
+    /*
+       ใช้ TextDecoder
+       เพื่อแปลงข้อมูลจาก Arduino
+       เป็นข้อความ
+    */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
-        updateSound(0);
+    const decoder =
+        new TextDecoder();
+
+
+    /*
+       เก็บข้อมูลที่ยังไม่ครบหนึ่งบรรทัด
+    */
+
+    let buffer = "";
+
+
+    try {
+
+        while (keepReading) {
+
+            /*
+               อ่านข้อมูลจาก Arduino
+            */
+
+            const {
+                value,
+                done
+            } = await reader.read();
+
+
+            /*
+               ถ้าจบการอ่าน
+            */
+
+            if (done) {
+
+                break;
+
+            }
+
+
+            /*
+               มีข้อมูลเข้ามา
+            */
+
+            if (value) {
+
+                /*
+                   แปลงข้อมูลเป็นข้อความ
+                */
+
+                buffer +=
+                    decoder.decode(
+                        value,
+                        {
+                            stream: true
+                        }
+                    );
+
+
+                /*
+                   Arduino ใช้ Serial.println()
+                   ดังนั้นแบ่งข้อมูลด้วย \n
+                */
+
+                const lines =
+                    buffer.split("\n");
+
+
+                /*
+                   บรรทัดสุดท้ายอาจยังไม่ครบ
+                   จึงเก็บเอาไว้
+                */
+
+                buffer =
+                    lines.pop();
+
+
+                /*
+                   ประมวลผลแต่ละบรรทัด
+                */
+
+                for (
+                    let line of lines
+                ) {
+
+                    line =
+                        line.trim();
+
+
+                    /*
+                       ข้ามบรรทัดว่าง
+                    */
+
+                    if (
+                        line === ""
+                    ) {
+
+                        continue;
+
+                    }
+
+
+                    /*
+                       แปลงเป็นตัวเลข
+                    */
+
+                    const valueNumber =
+                        Number(line);
+
+
+                    /*
+                       รับเฉพาะ
+                       0–1023
+                    */
+
+                    if (
+                        !isNaN(valueNumber) &&
+                        valueNumber >= 0 &&
+                        valueNumber <= 1023
+                    ) {
+
+                        console.log(
+                            "Arduino value:",
+                            valueNumber
+                        );
+
+
+                        /*
+                           ส่งค่าไปแสดงบนเว็บ
+                        */
+
+                        updateSound(
+                            valueNumber
+                        );
+
+                    }
+
+                }
+
+            }
+
+        }
 
     }
-);
 
+<<<<<<< HEAD
 /* =========================================================
    AUDIO UNLOCK
 ========================================================= */
@@ -1627,9 +2876,18 @@ async function disconnectArduino() {
     connected = false;
 
     if (reader) {
+=======
+    catch (error) {
 
-        try {
+        /*
+           ถ้ายังตั้งใจอ่านอยู่
+           แสดง Error
+        */
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
+        if (keepReading) {
+
+<<<<<<< HEAD
             await reader.cancel();
 
         }
@@ -1656,11 +2914,16 @@ async function disconnectArduino() {
 
             console.log(
                 "Read promise:",
+=======
+            console.error(
+                "Serial read error:",
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
                 error
             );
 
         }
 
+<<<<<<< HEAD
         readPromise = null;
     }
 
@@ -1706,8 +2969,191 @@ connectionButton.addEventListener(
         if (!connected) {
 
             await connectArduino();
+=======
+    }
+
+    finally {
+
+        /*
+           สำคัญมาก
+
+           ต้องปลด Lock ของ Reader
+           ก่อนปิด Serial Port
+        */
+
+        if (reader) {
+
+            try {
+
+                reader.releaseLock();
+
+            }
+
+            catch (error) {
+
+                console.log(
+                    "Reader release error:",
+                    error
+                );
+
+            }
+
+            reader = null;
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
         }
+
+    }
+
+}
+
+
+/* =========================================================
+   DISCONNECT ARDUINO
+   ========================================================= */
+
+async function disconnectArduino() {
+
+    console.log(
+        "กำลังตัดการเชื่อมต่อ Arduino..."
+    );
+
+
+    /*
+       บอก Loop ให้ออกจากการอ่าน
+    */
+
+    keepReading = false;
+
+    connected = false;
+
+
+    /*
+       ยกเลิก Reader
+    */
+
+    if (reader) {
+
+        try {
+
+            await reader.cancel();
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "Reader cancel:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+       รอให้ readSerialData()
+       ทำงานใน finally เสร็จ
+
+       เพื่อให้ reader.releaseLock()
+       เกิดขึ้นก่อน port.close()
+    */
+
+    if (readPromise) {
+
+        try {
+
+            await readPromise;
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "Read promise:",
+                error
+            );
+
+        }
+
+        readPromise = null;
+
+    }
+
+
+    /*
+       ปิด Serial Port
+    */
+
+    if (port) {
+
+        try {
+
+            if (port.readable) {
+
+                await port.close();
+
+            }
+
+        }
+
+        catch (error) {
+
+            console.log(
+                "Port close:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /*
+       ล้าง Port
+    */
+
+    port = null;
+
+
+    /*
+       อัปเดต UI
+    */
+
+    updateConnectionUI(false);
+
+
+    console.log(
+        "Arduino disconnected"
+    );
+
+}
+
+
+/* =========================================================
+   CONNECTION BUTTON
+   ========================================================= */
+
+connectionButton.addEventListener(
+    "click",
+    async () => {
+
+        /*
+           ถ้ายังไม่ได้เชื่อม
+           ให้ Connect
+        */
+
+        if (!connected) {
+
+            await connectArduino();
+
+        }
+
+        /*
+           ถ้าเชื่อมอยู่
+           ให้ Disconnect
+        */
 
         else {
 
@@ -1722,12 +3168,27 @@ connectionButton.addEventListener(
    ARDUINO DISCONNECTED EVENT
 ========================================================= */
 
+<<<<<<< HEAD
+=======
+/* =========================================================
+   ARDUINO DISCONNECTED EVENT
+   ========================================================= */
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 if ("serial" in navigator) {
 
     navigator.serial.addEventListener(
         "disconnect",
         async (event) => {
 
+<<<<<<< HEAD
+=======
+            /*
+               ตรวจสอบว่าเป็น Port
+               ที่เรากำลังใช้งานหรือไม่
+            */
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
             if (
                 port &&
                 event.target === port
@@ -1737,10 +3198,22 @@ if ("serial" in navigator) {
                     "Arduino ถูกถอดออก"
                 );
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
                 keepReading = false;
 
                 connected = false;
 
+<<<<<<< HEAD
+=======
+
+                /*
+                   หยุด Reader
+                */
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
                 if (reader) {
 
                     try {
@@ -1757,14 +3230,22 @@ if ("serial" in navigator) {
                         );
 
                     }
+<<<<<<< HEAD
                 }
 
+=======
+
+                }
+
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
                 port = null;
 
                 reader = null;
 
                 readPromise = null;
 
+<<<<<<< HEAD
                 updateConnectionUI(false);
             }
         }
@@ -1776,15 +3257,61 @@ if ("serial" in navigator) {
 ========================================================= */
 
 checkWebSerialSupport();
+=======
+
+                /*
+                   อัปเดต UI
+                */
+
+                updateConnectionUI(
+                    false
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   INITIAL
+   ========================================================= */
+
+
+/*
+   ตรวจสอบ Web Serial ตอนเปิดเว็บ
+*/
+
+checkWebSerialSupport();
+
+
+/*
+   ข้อความตั้งต้น
+*/
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 
 updateNotificationText();
 
+
+/*
+   เริ่มต้นที่ 0
+*/a
+
 updateSound(0);
 
+<<<<<<< HEAD
+=======
+
+/*
+   สถานะ Connection เริ่มต้น
+*/
+
+>>>>>>> 96108577ad5925f31bede23d608242606070ee85
 updateConnectionUI(false);
 
 </script>
 
 </body>
 </html>
-```
